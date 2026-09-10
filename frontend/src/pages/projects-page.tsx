@@ -56,7 +56,7 @@ export function ProjectsPage() {
       <div className="grid gap-6 xl:grid-cols-[420px_1fr]">
         <Card>
           <CardHeader>
-            <CardTitle>New project</CardTitle>
+            <CardTitle>New project!</CardTitle>
             <CardDescription>Seed the platform with the productions you want to track.</CardDescription>
           </CardHeader>
           <CardContent>

@@ -58,3 +58,43 @@ def test_project_crud(client: TestClient) -> None:
 
     delete_response = client.delete(f"/api/v1/projects/{project['id']}")
     assert delete_response.status_code == 204
+
+
+def test_person_and_auth_flow(client: TestClient) -> None:
+    # 1. Create a person with a password
+    person_data = {
+        "first_name": "Alice",
+        "last_name": "Artist",
+        "email": "alice@example.com",
+        "role": "3D Modeler",
+        "password": "secretpassword123",
+    }
+    create_resp = client.post("/api/v1/people/", json=person_data)
+    assert create_resp.status_code == 201
+    created_person = create_resp.json()
+    assert created_person["email"] == "alice@example.com"
+    assert created_person["has_password"] is True
+
+    # 2. Login with correct credentials
+    login_resp = client.post(
+        "/api/v1/auth/login",
+        json={"email": "alice@example.com", "password": "secretpassword123"},
+    )
+    assert login_resp.status_code == 200
+    token = login_resp.json()["access_token"]
+    assert token is not None
+
+    # 3. Test wrong password
+    bad_login = client.post(
+        "/api/v1/auth/login",
+        json={"email": "alice@example.com", "password": "wrongpassword"},
+    )
+    assert bad_login.status_code == 401
+
+    # 4. Fetch current user via /auth/me with Bearer token
+    me_resp = client.get(
+        "/api/v1/auth/me",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert me_resp.status_code == 200
+    assert me_resp.json()["email"] == "alice@example.com"

@@ -10,13 +10,21 @@ export interface Project {
 
 export interface Person {
   id: number
-  project_id: number
+  project_id?: number | null
   first_name: string
   last_name: string
   email: string
   role?: string | null
+  is_admin?: boolean
+  has_password?: boolean
   created_at: string
   updated_at: string
+}
+
+export interface LoginResponse {
+  access_token: string
+  token_type: string
+  user: Person
 }
 
 export interface Task {
